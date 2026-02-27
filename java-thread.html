@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Multithreading</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Source+Code+Pro&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .handout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        /* Content Styles */
+        .content {
+            padding: 40px;
+        }
+        
+        /* Section Styles */
+        .section {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .section h3 {
+            color: #764ba2;
+            margin: 20px 0 10px;
+        }
+        
+        /* Analogy Box */
+        .analogy-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%);
+            border-left: 5px solid #ff6b6b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        /* Code Blocks */
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        /* Diagram Container */
+        .diagram-container {
+            margin: 30px 0;
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .diagram-title {
+            font-weight: 500;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        /* SVG Diagrams */
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Animation Keyframes */
+        @keyframes pulse {
+            0% { r: 15; opacity: 0.8; }
+            50% { r: 20; opacity: 1; }
+            100% { r: 15; opacity: 0.8; }
+        }
+        
+        @keyframes slide {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(20px); }
+            100% { transform: translateX(0); }
+        }
+        
+        @keyframes glow {
+            0% { filter: drop-shadow(0 0 2px #667eea); }
+            50% { filter: drop-shadow(0 0 10px #667eea); }
+            100% { filter: drop-shadow(0 0 2px #667eea); }
+        }
+        
+        .animated-thread {
+            animation: pulse 2s infinite, slide 3s infinite;
+        }
+        
+        .animated-process {
+            animation: glow 2s infinite;
+        }
+        
+        /* Info Boxes */
+        .info-box {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .warning-box {
+            background: #fff3e0;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .success-box {
+            background: #e8f5e8;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        /* Priority Scale */
+        .priority-scale {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(90deg, #ff6b6b 0%, #4ecdc4 100%);
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .priority-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        /* Comparison Table */
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            padding: 20px;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .process {
+            background: #ffebee;
+        }
+        
+        .thread {
+            background: #e8f5e8;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .handout-container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+            
+            .animated-thread, .animated-process {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="handout-container">
+        <div class="header">
+            <h1>☕ Chapter-One</h1>
+            <div class="subtitle">Java Multithreading</div>
+        </div>
+        
+        <div class="content">
+            <!-- Section 1: Introduction -->
+            <section class="section" id="introduction">
+                <h2>1. Introduction to Concurrency</h2>
+                <p>Concurrency allows a program to perform multiple operations simultaneously, maximizing CPU utilization and improving application responsiveness.</p>
+                
+                <div class="analogy-box">
+                    <h3>🎯 The Human Analogy</h3>
+                    <p>Much like humans can walk, talk, and breathe simultaneously, computers can download files, print documents, and run a system clock in parallel. This natural parallelism is what multithreading aims to achieve in software.</p>
+                </div>
+                
+                <h3>Process vs. Thread</h3>
+                <div class="comparison-table">
+                    <div class="comparison-item process">
+                        <h4 style="color: #c62828;">📦 Process</h4>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>Heavyweight</strong> - Significant resource overhead</li>
+                            <li><strong>Dedicated Memory</strong> - Each process has its own memory space</li>
+                            <li><strong>Isolated</strong> - Processes don't share memory directly</li>
+                            <li><strong>Slow Communication</strong> - Requires IPC mechanisms</li>
+                        </ul>
+                    </div>
+                    <div class="comparison-item thread">
+                        <h4 style="color: #2e7d32;">🧵 Thread</h4>
+                        <ul style="margin-left: 20px;">
+                            <li><strong>Lightweight</strong> - Minimal resource overhead</li>
+                            <li><strong>Shared Memory</strong> - Threads share the same memory space</li>
+                            <li><strong>Efficient Communication</strong> - Direct memory access</li>
+                            <li><strong>Fast Creation</strong> - Quick to create and destroy</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="diagram-container">
+                    <div class="diagram-title">📊 Process vs Thread Memory Layout</div>
+                    <svg width="600" height="300" viewBox="0 0 600 300">
+                        <!-- Process 1 -->
+                        <rect x="50" y="50" width="150" height="200" fill="#ffcdd2" stroke="#c62828" stroke-width="2" rx="10"/>
+                        <text x="125" y="30" text-anchor="middle" fill="#c62828" font-weight="bold">Process 1</text>
+                        <rect x="70" y="70" width="110" height="40" fill="white" stroke="#c62828" stroke-width="1"/>
+                        <text x="125" y="95" text-anchor="middle" fill="#c62828">Code</text>
+                        <rect x="70" y="120" width="110" height="40" fill="white" stroke="#c62828" stroke-width="1"/>
+                        <text x="125" y="145" text-anchor="middle" fill="#c62828">Data</text>
+                        <rect x="70" y="170" width="110" height="40" fill="white" stroke="#c62828" stroke-width="1"/>
+                        <text x="125" y="195" text-anchor="middle" fill="#c62828">Stack</text>
+                        
+                        <!-- Process 2 -->
+                        <rect x="250" y="50" width="150" height="200" fill="#bbdefb" stroke="#1565c0" stroke-width="2" rx="10"/>
+                        <text x="325" y="30" text-anchor="middle" fill="#1565c0" font-weight="bold">Process 2</text>
+                        <rect x="270" y="70" width="110" height="40" fill="white" stroke="#1565c0" stroke-width="1"/>
+                        <text x="325" y="95" text-anchor="middle" fill="#1565c0">Code</text>
+                        <rect x="270" y="120" width="110" height="40" fill="white" stroke="#1565c0" stroke-width="1"/>
+                        <text x="325" y="145" text-anchor="middle" fill="#1565c0">Data</text>
+                        <rect x="270" y="170" width="110" height="40" fill="white" stroke="#1565c0" stroke-width="1"/>
+                        <text x="325" y="195" text-anchor="middle" fill="#1565c0">Stack</text>
+                        
+                        <!-- Threads within Process -->
+                        <rect x="450" y="50" width="150" height="200" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2" rx="10"/>
+                        <text x="525" y="30" text-anchor="middle" fill="#2e7d32" font-weight="bold">Process with Threads</text>
+                        <rect x="470" y="70" width="110" height="40" fill="white" stroke="#2e7d32" stroke-width="1"/>
+                        <text x="525" y="95" text-anchor="middle" fill="#2e7d32">Shared Code</text>
+                        <rect x="470" y="120" width="110" height="40" fill="white" stroke="#2e7d32" stroke-width="1"/>
+                        <text x="525" y="145" text-anchor="middle" fill="#2e7d32">Shared Data</text>
+                        
+                        <!-- Thread Stacks -->
+                        <rect x="470" y="170" width="30" height="30" fill="#ffb74d" stroke="#2e7d32" stroke-width="1" class="animated-thread"/>
+                        <rect x="510" y="170" width="30" height="30" fill="#ffb74d" stroke="#2e7d32" stroke-width="1" class="animated-thread"/>
+                        <rect x="550" y="170" width="30" height="30" fill="#ffb74d" stroke="#2e7d32" stroke-width="1" class="animated-thread"/>
+                        <text x="525" y="215" text-anchor="middle" fill="#2e7d32">Thread Stacks</text>
+                    </svg>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🎯 The "Why" of Multithreading</h4>
+                    <p>Multithreading gives Java powerful capabilities not found in natively single-threaded languages like C or C++. A primary use case is streaming media, where one thread downloads data while another plays it simultaneously to ensure a smooth user experience.</p>
+                </div>
+            </section>
+            
+            <!-- Section 2: Thread Class -->
+            <section class="section" id="thread-class">
+                <h2>2. Class Thread: An Overview of Thread Methods</h2>
+                <p>Java provides the Thread class to manage concurrent execution.</p>
+                
+                <h3>📝 Thread Constructors</h3>
+                <div class="code-block">
+                    <span style="color: #66d9ef;">public class</span> <span style="color: #a6e22e;">ThreadExample</span> {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #66d9ef;">public static void</span> <span style="color: #a6e22e;">main</span>(String[] args) {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #75715e;">// Thread(): Creates thread with auto-numbered name</span><br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread t1 = <span style="color: #66d9ef;">new</span> Thread(); <span style="color: #75715e;">// Name: "Thread-1"</span><br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #75715e;">// Thread(String name): Creates thread with specific name</span><br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread t2 = <span style="color: #66d9ef;">new</span> Thread(<span style="color: #e6db74;">"Downloader-Thread"</span>);<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #75715e;">// Starting threads</span><br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t1.start(); <span style="color: #75715e;">// Launches thread and calls run()</span><br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t2.start();<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                    }
+                </div>
+                
+                <h3>⚙️ Core Thread Methods</h3>
+                <div class="diagram-container">
+                    <div class="diagram-title">Thread Method Visualization</div>
+                    <svg width="600" height="200" viewBox="0 0 600 200">
+                        <!-- Timeline -->
+                        <line x1="50" y1="100" x2="550" y2="100" stroke="#333" stroke-width="2" stroke-dasharray="5,5"/>
+                        
+                        <!-- Start -->
+                        <circle cx="100" cy="100" r="15" fill="#4caf50" class="animated-thread"/>
+                        <text x="100" y="140" text-anchor="middle" fill="#2e7d32">start()</text>
+                        
+                        <!-- Sleep -->
+                        <rect x="200" y="85" width="100" height="30" fill="#ff9800" rx="5"/>
+                        <text x="250" y="105" text-anchor="middle" fill="white" font-weight="bold">sleep()</text>
+                        
+                        <!-- Running -->
+                        <circle cx="350" cy="100" r="15" fill="#2196f3" class="animated-thread"/>
+                        <text x="350" y="140" text-anchor="middle" fill="#1565c0">run()</text>
+                        
+                        <!-- isAlive check -->
+                        <circle cx="450" cy="100" r="15" fill="#9c27b0" class="animated-thread"/>
+                        <text x="450" y="140" text-anchor="middle" fill="#6a1b9a">isAlive()</text>
+                        
+                        <!-- Animated progress -->
+                        <circle cx="100" cy="100" r="5" fill="white">
+                            <animate attributeName="cx" from="100" to="450" dur="5s" repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
+                </div>
+                
+                <div class="warning-box">
+                    <strong>⚠️ Important:</strong> Calling <code>start()</code> twice on the same thread will throw <code>IllegalThreadStateException</code>. Once a thread is started, it cannot be restarted.
+                </div>
+            </section>
+            
+            <!-- Section 3: Thread States -->
+            <section class="section" id="thread-states">
+                <h2>3. Thread States: Life Cycle of a Thread</h2>
+                <p>A thread exists in various states throughout its execution.</p>
+                
+                <div class="diagram-container">
+                    <div class="diagram-title">🔄 Thread Life Cycle State Diagram</div>
+                    <svg width="600" height="400" viewBox="0 0 600 400">
+                        <!-- Born State -->
+                        <circle cx="100" cy="100" r="30" fill="#ffcdd2" stroke="#c62828" stroke-width="2"/>
+                        <text x="100" y="105" text-anchor="middle" fill="#c62828" font-size="12">Born</text>
+                        
+                        <!-- Ready State -->
+                        <circle cx="250" cy="100" r="30" fill="#bbdefb" stroke="#1565c0" stroke-width="2"/>
+                        <text x="250" y="105" text-anchor="middle" fill="#1565c0" font-size="12">Ready</text>
+                        
+                        <!-- Running State -->
+                        <circle cx="400" cy="100" r="30" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2"/>
+                        <text x="400" y="105" text-anchor="middle" fill="#2e7d32" font-size="12">Running</text>
+                        
+                        <!-- Blocked/Waiting States -->
+                        <circle cx="250" cy="250" r="30" fill="#fff3e0" stroke="#ff9800" stroke-width="2"/>
+                        <text x="250" y="245" text-anchor="middle" fill="#ff9800" font-size="10">Blocked/</text>
+                        <text x="250" y="260" text-anchor="middle" fill="#ff9800" font-size="10">Waiting</text>
+                        
+                        <!-- Dead State -->
+                        <circle cx="500" cy="250" r="30" fill="#e0e0e0" stroke="#616161" stroke-width="2"/>
+                        <text x="500" y="105" text-anchor="middle" fill="#616161" font-size="12">Dead</text>
+                        
+                        <!-- Transitions -->
+                        <!-- Born to Ready -->
+                        <line x1="130" y1="100" x2="220" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        <text x="175" y="80" text-anchor="middle" fill="#333" font-size="10">start()</text>
+                        
+                        <!-- Ready to Running -->
+                        <line x1="280" y1="100" x2="370" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        <text x="325" y="80" text-anchor="middle" fill="#333" font-size="10">Scheduler</text>
+                        
+                        <!-- Running to Ready -->
+                        <line x1="400" y1="130" x2="400" y2="170" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        <line x1="400" y1="170" x2="280" y2="170" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        <line x1="280" y1="170" x2="280" y2="130" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        <text x="450" y="150" text-anchor="middle" fill="#333" font-size="10">Yield/Preempt</text>
+                        
+                        <!-- Running to Blocked -->
+                        <line x1="380" y1="120" x2="270" y2="230" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        <text x="400" y="180" text-anchor="middle" fill="#333" font-size="10">wait()/sleep()</text>
+                        
+                        <!-- Blocked to Ready -->
+                        <line x1="230" y1="240" x2="230" y2="130" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        <text x="200" y="185" text-anchor="middle" fill="#333" font-size="10">notify()/timeout</text>
+                        
+                        <!-- Running to Dead -->
+                        <line x1="420" y1="115" x2="490" y2="235" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        <text x="500" y="170" text-anchor="middle" fill="#333" font-size="10">run() ends</text>
+                        
+                        <!-- Arrow marker -->
+                        <defs>
+                            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+                                <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <div class="info-box">
+                    <h4>State Descriptions:</h4>
+                    <ul style="margin-left: 20px;">
+                        <li><strong>Born:</strong> Thread created but not started</li>
+                        <li><strong>Ready:</strong> Waiting for processor time</li>
+                        <li><strong>Running:</strong> Actively executing</li>
+                        <li><strong>Blocked:</strong> Waiting for I/O or monitor lock</li>
+                        <li><strong>Sleeping:</strong> Temporarily paused</li>
+                        <li><strong>Waiting:</strong> Waiting for notification</li>
+                        <li><strong>Dead:</strong> Execution completed</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Section 4: Thread Priorities -->
+            <section class="section" id="priorities">
+                <h2>4. Thread Priorities and Scheduling</h2>
+                <p>The JVM uses a scheduler to decide which "Ready" thread gets to move to "Running".</p>
+                
+                <h3>Priority Levels (1-10)</h3>
+                <div class="priority-scale">
+                    <div class="priority-item">MIN_PRIORITY (1)</div>
+                    <div class="priority-item">2</div>
+                    <div class="priority-item">3</div>
+                    <div class="priority-item">4</div>
+                    <div class="priority-item">NORM_PRIORITY (5)</div>
+                    <div class="priority-item">6</div>
+                    <div class="priority-item">7</div>
+                    <div class="priority-item">8</div>
+                    <div class="priority-item">9</div>
+                    <div class="priority-item">MAX_PRIORITY (10)</div>
+                </div>
+                
+                <div class="code-block">
+                    <span style="color: #75715e;">// Setting thread priorities</span><br/>
+                    Thread thread = <span style="color: #66d9ef;">new</span> Thread(() -> {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;System.<span style="color: #a6e22e;">out</span>.println(<span style="color: #e6db74;">"Running..."</span>);<br/>
+                    });<br/>
+                    <br/>
+                    thread.setPriority(Thread.<span style="color: #a6e22e;">MAX_PRIORITY</span>); <span style="color: #75715e;">// Priority 10</span><br/>
+                    thread.setPriority(Thread.<span style="color: #a6e22e;">MIN_PRIORITY</span>); <span style="color: #75715e;">// Priority 1</span><br/>
+                    thread.setPriority(Thread.<span style="color: #a6e22e;">NORM_PRIORITY</span>); <span style="color: #75715e;">// Priority 5 (default)</span>
+                </div>
+                
+                <h3>Scheduling Models</h3>
+                <div class="comparison-table">
+                    <div class="comparison-item">
+                        <h4>⏱️ Timeslicing (Windows)</h4>
+                        <p>Each thread gets a fixed time quantum before the CPU switches to another thread of equal priority.</p>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>🏃 Run-to-Completion (Solaris)</h4>
+                        <p>A thread runs until it finishes or is preempted by a higher-priority thread.</p>
+                    </div>
+                </div>
+                
+                <div class="diagram-container">
+                    <div class="diagram-title">Priority-Based Scheduling Visualization</div>
+                    <svg width="600" height="250" viewBox="0 0 600 250">
+                        <!-- Priority levels -->
+                        <rect x="50" y="200" width="500" height="20" fill="#e0e0e0" rx="5"/>
+                        
+                        <!-- High priority thread (10) -->
+                        <rect x="50" y="180" width="100" height="20" fill="#ff6b6b" rx="5" class="animated-thread"/>
+                        <text x="100" y="170" text-anchor="middle" fill="#c62828" font-size="12">Priority 10</text>
+                        
+                        <!-- Medium priority thread (5) -->
+                        <rect x="160" y="150" width="80" height="20" fill="#4ecdc4" rx="5" class="animated-thread"/>
+                        <text x="200" y="140" text-anchor="middle" fill="#1a5f5a" font-size="12">Priority 5</text>
+                        
+                        <!-- Low priority thread (1) -->
+                        <rect x="250" y="120" width="60" height="20" fill="#95a5a6" rx="5" class="animated-thread"/>
+                        <text x="280" y="110" text-anchor="middle" fill="#2c3e50" font-size="12">Priority 1</text>
+                        
+                        <!-- Timeline -->
+                        <line x1="50" y1="220" x2="550" y2="220" stroke="#333" stroke-width="1"/>
+                        <text x="50" y="240" fill="#333">Start</text>
+                        <text x="550" y="240" fill="#333">End</text>
+                    </svg>
+                </div>
+            </section>
+            
+            <!-- Section 5: Synchronization -->
+            <section class="section" id="synchronization">
+                <h2>5. Thread Synchronization</h2>
+                <p>When multiple threads share the same data, they can interfere with each other. Synchronization ensures data integrity.</p>
+                
+                <div class="code-block">
+                    <span style="color: #66d9ef;">public class</span> <span style="color: #a6e22e;">Counter</span> {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #66d9ef;">private int</span> count = <span style="color: #ae81ff;">0</span>;<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #75715e;">// Synchronized method</span><br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #66d9ef;">public synchronized void</span> <span style="color: #a6e22e;">increment</span>() {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count++;<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #75715e;">// Wait and notify example</span><br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #66d9ef;">public synchronized void</span> <span style="color: #a6e22e;">waitForValue</span>(<span style="color: #66d9ef;">int</span> target) <span style="color: #66d9ef;">throws</span> InterruptedException {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #66d9ef;">while</span> (count < target) {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wait(); <span style="color: #75715e;">// Releases the lock</span><br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #66d9ef;">public synchronized void</span> <span style="color: #a6e22e;">notifyThreads</span>() {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notifyAll(); <span style="color: #75715e;">// Wakes up all waiting threads</span><br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                    }
+                </div>
+                
+                <div class="diagram-container">
+                    <div class="diagram-title">Synchronized Block Visualization</div>
+                    <svg width="600" height="250" viewBox="0 0 600 250">
+                        <!-- Critical section -->
+                        <rect x="150" y="50" width="300" height="150" fill="#fff3e0" stroke="#ff9800" stroke-width="3" rx="10"/>
+                        <text x="300" y="30" text-anchor="middle" fill="#ff9800" font-weight="bold">Critical Section</text>
+                        
+                        <!-- Threads attempting to enter -->
+                        <circle cx="50" cy="100" r="20" fill="#ff6b6b" class="animated-thread"/>
+                        <text x="50" y="140" text-anchor="middle" fill="#c62828">Thread 1</text>
+                        
+                        <circle cx="100" cy="175" r="20" fill="#4ecdc4" class="animated-thread"/>
+                        <text x="100" y="215" text-anchor="middle" fill="#1a5f5a">Thread 2</text>
+                        
+                        <!-- Lock -->
+                        <rect x="275" y="100" width="50" height="50" fill="#ffd700" stroke="#b8860b" stroke-width="2" rx="5"/>
+                        <text x="300" y="130" text-anchor="middle" fill="#b8860b">LOCK</text>
+                        
+                        <!-- Thread in critical section -->
+                        <circle cx="400" cy="125" r="20" fill="#4caf50" class="animated-thread"/>
+                        <text x="400" y="165" text-anchor="middle" fill="#2e7d32">Thread 3</text>
+                        
+                        <!-- Paths -->
+                        <line x1="70" y1="100" x2="150" y2="100" stroke="#333" stroke-width="1" stroke-dasharray="5,5"/>
+                        <line x1="110" y1="175" x2="150" y2="125" stroke="#333" stroke-width="1" stroke-dasharray="5,5"/>
+                    </svg>
+                </div>
+                
+                <div class="info-box">
+                    <h4>🔄 Wait/Notify Mechanism</h4>
+                    <ul>
+                        <li><strong>wait():</strong> Causes thread to release the lock and wait</li>
+                        <li><strong>notify():</strong> Wakes up a single waiting thread</li>
+                        <li><strong>notifyAll():</strong> Wakes up all waiting threads</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Section 6: Daemon Threads -->
+            <section class="section" id="daemon">
+                <h2>6. Daemon Threads</h2>
+                <p>A Daemon thread is a "service provider" thread that runs in the background.</p>
+                
+                <div class="diagram-container">
+                    <div class="diagram-title">👻 Daemon vs User Threads</div>
+                    <svg width="600" height="200" viewBox="0 0 600 200">
+                        <!-- User Thread -->
+                        <rect x="50" y="30" width="200" height="60" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2" rx="5"/>
+                        <text x="150" y="65" text-anchor="middle" fill="#2e7d32" font-weight="bold">User Thread (Main)</text>
+                        
+                        <!-- Daemon Threads -->
+                        <rect x="300" y="30" width="80" height="40" fill="#e0e0e0" stroke="#757575" stroke-width="1" rx="3"/>
+                        <text x="340" y="55" text-anchor="middle" fill="#757575" font-size="10">GC</text>
+                        
+                        <rect x="400" y="30" width="80" height="40" fill="#e0e0e0" stroke="#757575" stroke-width="1" rx="3"/>
+                        <text x="440" y="55" text-anchor="middle" fill="#757575" font-size="10">Finalizer</text>
+                        
+                        <rect x="500" y="30" width="80" height="40" fill="#e0e0e0" stroke="#757575" stroke-width="1" rx="3"/>
+                        <text x="540" y="55" text-anchor="middle" fill="#757575" font-size="10">Compiler</text>
+                        
+                        <!-- User thread completes -->
+                        <line x1="150" y1="100" x2="150" y2="150" stroke="#2e7d32" stroke-width="2"/>
+                        <rect x="100" y="150" width="100" height="30" fill="#ffcdd2" stroke="#c62828" stroke-width="2" rx="5"/>
+                        <text x="150" y="170" text-anchor="middle" fill="#c62828">User Thread Ends</text>
+                        
+                        <!-- JVM Shutdown -->
+                        <line x1="150" y1="180" x2="150" y2="190" stroke="#333" stroke-width="2"/>
+                        <text x="350" y="190" text-anchor="middle" fill="#333">JVM Shuts Down (Daemon threads terminate)</text>
+                    </svg>
+                </div>
+                
+                <div class="code-block">
+                    <span style="color: #75715e;">// Creating a daemon thread</span><br/>
+                    Thread daemonThread = <span style="color: #66d9ef;">new</span> Thread(() -> {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #66d9ef;">while</span> (<span style="color: #66d9ef;">true</span>) {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.<span style="color: #a6e22e;">out</span>.println(<span style="color: #e6db74;">"Daemon running..."</span>);<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #66d9ef;">try</span> {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread.<span style="color: #a6e22e;">sleep</span>(<span style="color: #ae81ff;">1000</span>);<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} <span style="color: #66d9ef;">catch</span> (InterruptedException e) {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #66d9ef;">break</span>;<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                    });<br/>
+                    <br/>
+                    daemonThread.setDaemon(<span style="color: #66d9ef;">true</span>); <span style="color: #75715e;">// Must be called before start()</span><br/>
+                    daemonThread.start();
+                </div>
+                
+                <div class="warning-box">
+                    <strong>⚠️ Important:</strong> The JVM exits when only daemon threads are running. Daemon threads are terminated abruptly when the last user thread completes.
+                </div>
+            </section>
+            
+            <!-- Section 7: Runnable Interface -->
+            <section class="section" id="runnable">
+                <h2>7. Runnable Interface</h2>
+                <p>While you can create a thread by extending the Thread class, implementing the Runnable interface is often preferred.</p>
+                
+                <div class="comparison-table">
+                    <div class="comparison-item">
+                        <h4>❌ Extending Thread</h4>
+                        <div class="code-block" style="font-size: 12px;">
+                            <span style="color: #66d9ef;">class</span> <span style="color: #a6e22e;">MyThread</span> <span style="color: #66d9ef;">extends</span> Thread {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #66d9ef;">public void</span> run() {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span style="color: #e6db74;">"Running"</span>);<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                            }<br/>
+                            <br/>
+                            <span style="color: #75715e;">// Usage</span><br/>
+                            <span style="color: #66d9ef;">new</span> MyThread().start();
+                        </div>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>✅ Implementing Runnable</h4>
+                        <div class="code-block" style="font-size: 12px;">
+                            <span style="color: #66d9ef;">class</span> <span style="color: #a6e22e;">MyRunnable</span> <span style="color: #66d9ef;">implements</span> Runnable {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #66d9ef;">public void</span> run() {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span style="color: #e6db74;">"Running"</span>);<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                            }<br/>
+                            <br/>
+                            <span style="color: #75715e;">// Usage</span><br/>
+                            <span style="color: #66d9ef;">new</span> Thread(<span style="color: #66d9ef;">new</span> MyRunnable()).start();
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="diagram-container">
+                    <div class="diagram-title">Runnable Pattern</div>
+                    <svg width="500" height="150" viewBox="0 0 500 150">
+                        <!-- Runnable -->
+                        <rect x="50" y="50" width="120" height="60" fill="#bbdefb" stroke="#1565c0" stroke-width="2" rx="5"/>
+                        <text x="110" y="85" text-anchor="middle" fill="#1565c0">Runnable</text>
+                        
+                        <!-- Thread -->
+                        <rect x="220" y="50" width="120" height="60" fill="#c8e6c9" stroke="#2e7d32" stroke-width="2" rx="5"/>
+                        <text x="280" y="85" text-anchor="middle" fill="#2e7d32">Thread</text>
+                        
+                        <!-- Execution -->
+                        <rect x="390" y="50" width="80" height="60" fill="#ffcdd2" stroke="#c62828" stroke-width="2" rx="5"/>
+                        <text x="430" y="85" text-anchor="middle" fill="#c62828">run()</text>
+                        
+                        <!-- Arrows -->
+                        <line x1="170" y1="80" x2="220" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                        <line x1="340" y1="80" x2="390" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+                    </svg>
+                </div>
+                
+                <div class="success-box">
+                    <h4>🎯 Why Runnable is Preferred:</h4>
+                    <ul>
+                        <li><strong>Flexibility:</strong> Your class can extend another class while still being runnable</li>
+                        <li><strong>Separation of Concerns:</strong> Separates task (Runnable) from executor (Thread)</li>
+                        <li><strong>Reusability:</strong> Same Runnable can be used with different executors</li>
+                        <li><strong>Better OOP Design:</strong> Follows composition over inheritance principle</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Section 8: Thread Groups -->
+            <section class="section" id="thread-groups">
+                <h2>8. Thread Groups</h2>
+                <p>Thread Groups allow you to categorize threads into a single object for easier management.</p>
+                
+                <div class="diagram-container">
+                    <div class="diagram-title">🌳 Thread Group Hierarchy</div>
+                    <svg width="600" height="300" viewBox="0 0 600 300">
+                        <!-- Main group -->
+                        <rect x="250" y="30" width="100" height="40" fill="#ffb74d" stroke="#e65100" stroke-width="2" rx="5"/>
+                        <text x="300" y="55" text-anchor="middle" fill="#e65100">main</text>
+                        
+                        <!-- Child groups -->
+                        <rect x="100" y="120" width="100" height="40" fill="#ffb74d" stroke="#e65100" stroke-width="2" rx="5"/>
+                        <text x="150" y="145" text-anchor="middle" fill="#e65100">IO Group</text>
+                        
+                        <rect x="250" y="120" width="100" height="40" fill="#ffb74d" stroke="#e65100" stroke-width="2" rx="5"/>
+                        <text x="300" y="145" text-anchor="middle" fill="#e65100">Worker Group</text>
+                        
+                        <rect x="400" y="120" width="100" height="40" fill="#ffb74d" stroke="#e65100" stroke-width="2" rx="5"/>
+                        <text x="450" y="145" text-anchor="middle" fill="#e65100">Timer Group</text>
+                        
+                        <!-- Threads -->
+                        <circle cx="150" cy="210" r="15" fill="#c8e6c9" class="animated-thread"/>
+                        <text x="150" y="240" text-anchor="middle" fill="#2e7d32">T1</text>
+                        
+                        <circle cx="300" cy="210" r="15" fill="#c8e6c9" class="animated-thread"/>
+                        <text x="300" y="240" text-anchor="middle" fill="#2e7d32">T2</text>
+                        
+                        <circle cx="450" cy="210" r="15" fill="#c8e6c9" class="animated-thread"/>
+                        <text x="450" y="240" text-anchor="middle" fill="#2e7d32">T3</text>
+                        
+                        <circle cx="200" cy="260" r="15" fill="#c8e6c9" class="animated-thread"/>
+                        <text x="200" y="290" text-anchor="middle" fill="#2e7d32">T4</text>
+                        
+                        <!-- Connections -->
+                        <line x1="300" y1="70" x2="150" y2="120" stroke="#333" stroke-width="1"/>
+                        <line x1="300" y1="70" x2="300" y2="120" stroke="#333" stroke-width="1"/>
+                        <line x1="300" y1="70" x2="450" y2="120" stroke="#333" stroke-width="1"/>
+                        
+                        <line x1="150" y1="160" x2="150" y2="195" stroke="#333" stroke-width="1"/>
+                        <line x1="300" y1="160" x2="300" y2="195" stroke="#333" stroke-width="1"/>
+                        <line x1="450" y1="160" x2="450" y2="195" stroke="#333" stroke-width="1"/>
+                        <line x1="150" y1="160" x2="200" y2="245" stroke="#333" stroke-width="1"/>
+                    </svg>
+                </div>
+                
+                <div class="code-block">
+                    <span style="color: #75715e;">// Creating thread groups</span><br/>
+                    ThreadGroup parentGroup = <span style="color: #66d9ef;">new</span> ThreadGroup(<span style="color: #e6db74;">"ParentGroup"</span>);<br/>
+                    ThreadGroup childGroup = <span style="color: #66d9ef;">new</span> ThreadGroup(parentGroup, <span style="color: #e6db74;">"ChildGroup"</span>);<br/>
+                    <br/>
+                    <span style="color: #75715e;">// Creating threads in groups</span><br/>
+                    Thread t1 = <span style="color: #66d9ef;">new</span> Thread(parentGroup, () -> {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span style="color: #e6db74;">"Thread in parent group"</span>);<br/>
+                    });<br/>
+                    <br/>
+                    Thread t2 = <span style="color: #66d9ef;">new</span> Thread(childGroup, () -> {<br/>
+                    &nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span style="color: #e6db74;">"Thread in child group"</span>);<br/>
+                    });<br/>
+                    <br/>
+                    <span style="color: #75715e;">// Managing entire group</span><br/>
+                    parentGroup.interrupt(); <span style="color: #75715e;">// Interrupts all threads in group</span><br/>
+                    parentGroup.setMaxPriority(Thread.<span style="color: #a6e22e;">MAX_PRIORITY</span>); <span style="color: #75715e;">// Sets max priority for all</span>
+                </div>
+                
+                <div class="info-box">
+                    <h4>📊 Thread Group Benefits:</h4>
+                    <ul>
+                        <li><strong>Bulk Operations:</strong> Interrupt or modify priority of entire group at once</li>
+                        <li><strong>Organization:</strong> Creates tree-like hierarchy for better control</li>
+                        <li><strong>Security:</strong> Can restrict access to threads within a group</li>
+                        <li><strong>Monitoring:</strong> Easy to enumerate and monitor related threads</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Summary Section -->
+            <section class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h2 style="color: white; border-bottom-color: white;">📚 Quick Reference Summary</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px;">
+                        <h3 style="color: white;">Key Methods</h3>
+                        <ul style="list-style-type: none;">
+                            <li>• start() - Launches thread</li>
+                            <li>• run() - Contains thread logic</li>
+                            <li>• sleep(ms) - Pauses thread</li>
+                            <li>• join() - Waits for thread</li>
+                            <li>• interrupt() - Interrupts thread</li>
+                            <li>• yield() - Pauses voluntarily</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px;">
+                        <h3 style="color: white;">Synchronization</h3>
+                        <ul style="list-style-type: none;">
+                            <li>• synchronized keyword</li>
+                            <li>• wait() - Releases lock</li>
+                            <li>• notify() - Wakes one thread</li>
+                            <li>• notifyAll() - Wakes all</li>
+                            <li>• Lock interface</li>
+                            <li>• Atomic variables</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px;">
+                        <h3 style="color: white;">Common Pitfalls</h3>
+                        <ul style="list-style-type: none;">
+                            <li>• Deadlock ⚠️</li>
+                            <li>• Race conditions 🏃</li>
+                            <li>• Thread starvation 🌟</li>
+                            <li>• Livelock 🔄</li>
+                            <li>• Memory consistency 📝</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px;">
+                        <h3 style="color: white;">Best Practices</h3>
+                        <ul style="list-style-type: none;">
+                            <li>• Prefer Runnable over Thread</li>
+                            <li>• Use thread pools</li>
+                            <li>• Minimize synchronization</li>
+                            <li>• Use concurrent collections</li>
+                            <li>• Handle interrupts properly</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div class="footer">
+            <p>Java Multithreading| Created for Educational Purposes</p>
+            <p>📅 2026 | Version 1.0</p>
+        </div>
+    </div>
+    
+    <script>
+        // Add interactive tooltips and animations
+        document.querySelectorAll('.animated-thread').forEach(el => {
+            el.addEventListener('mouseover', function() {
+                this.style.animation = 'pulse 0.5s infinite';
+            });
+            el.addEventListener('mouseout', function() {
+                this.style.animation = 'pulse 2s infinite, slide 3s infinite';
+            });
+        });
+    </script>
+</body>
+</html>
